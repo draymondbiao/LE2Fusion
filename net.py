@@ -1,13 +1,12 @@
-from model_LE2Fusion import Illumination_classifier
+from model_LE2Fusion import LE2
 EPSILON = 1e-10
 from torch import nn
 import numpy as np
-from data_loader.pixel_intensity_loss import con2
+from data_loader.pixel_intensity_loss import pixel_intensity
 
 from data_loader.common import reflect_conv
 
 import torch
-
 
 
 
@@ -93,7 +92,7 @@ def toZeroThreshold(x, t=0.1):
     return torch.where(x > t, x, zeros)
 
 def Fusion_layer(vi_out, ir_out,vis_image):#中途融合方式（即串联）
-    cls = Illumination_classifier(3)
+    cls = LE2(3)
     cls.cuda()
     cls.eval()
     out = cls(vis_image)
@@ -103,8 +102,8 @@ def Fusion_layer(vi_out, ir_out,vis_image):#中途融合方式（即串联）
     abs_ir=torch.abs(out_ir)
     abs_vi=torch.abs(out_vi)
 
-    ei_ir = con2(abs_ir)
-    ei_vi = con2(abs_vi)
+    ei_ir = pixel_intensity(abs_ir)
+    ei_vi = pixel_intensity(abs_vi)
 
     ir_weight = ei_ir / (ei_ir + ei_vi+EPSILON)
     vi_weight = ei_vi / (ei_ir + ei_vi+EPSILON)
@@ -112,8 +111,11 @@ def Fusion_layer(vi_out, ir_out,vis_image):#中途融合方式（即串联）
     tensor_f = torch.cat([vi_weight * vi_out+vi_out , ir_weight * ir_out+ir_out], dim=1)
     return tensor_f
 
+
+
+
 def Fusion_weight(vis_image):
-    cls = Illumination_classifier(3)
+    cls = LE2(3)
     cls.cuda()
     cls.eval()
     out = cls(vis_image)
@@ -123,8 +125,8 @@ def Fusion_weight(vis_image):
     abs_ir=torch.abs(out_ir)
     abs_vi=torch.abs(out_vi)
 
-    ei_ir = con2(abs_ir)
-    ei_vi = con2(abs_vi)
+    ei_ir = pixel_intensity(abs_ir)
+    ei_vi = pixel_intensity(abs_vi)
 
     ir_weight = ei_ir / (ei_ir + ei_vi+EPSILON)
     vi_weight = ei_vi / (ei_ir + ei_vi+EPSILON)
