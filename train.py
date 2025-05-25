@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Time ： 2022/6/21 18:00
-@Auth ： zxc (https://github.com/linklist2)
+@Time ： 2025/5/25 13:00
 @File ：train_fusion_model.py
 @IDE ：PyCharm
 @Function ：训练融合网络
@@ -42,7 +41,7 @@ def init_seeds(seed=0):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch LE2Fusion')
-    parser.add_argument('--dataset_path', metavar='DIR', default='../datasets/msrs_train',
+    parser.add_argument('--dataset_path', metavar='DIR', default='/data/Disk_A/yongbiao/USERPROG/PIAFusion/datasets/msrs_train/',
                         help='path to dataset (default: imagenet)')
     parser.add_argument('-a', '--arch', metavar='ARCH', default='fusion_model',
                         choices=['fusion_model'])
@@ -162,7 +161,7 @@ if __name__ == '__main__':
                 loss = t1*loss_illum + t2*loss_aux +49*loss_texture
                 # loss = t2 * loss_aux + t3 * loss_texture
                 s=loss.item()
-                train_tqdm.set_postfix(epoch=epoch, illum=loss_illum.item(),aux=loss_aux.item(),
+                train_tqdm.set_postfix(epoch=epoch, ssim=loss_illum.item(),region=loss_aux.item(),
                                        texture=loss_texture.item(),
                                        total=loss.item())
 
